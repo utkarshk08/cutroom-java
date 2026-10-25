@@ -1,0 +1,73 @@
+// Optional Playwright CLI smoke check. Not part of the app or its dependencies.
+// Run only in a dedicated test profile on the separate port 5174.
+async (page) => {
+  if (new URL(page.url()).origin !== 'http://localhost:5174') throw new Error('Use the isolated learning-edition browser.');
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('dialog', dialog => dialog.accept());
+  await page.route('**/api/**', route => route.abort());
+  // Start on a freshly opened, empty /playground so no user's data is replaced.
+  if (await page.locator('.library-piece').count()) throw new Error('Open a fresh empty preview for this check.');
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const check = (value, message) => { if (!value) throw new Error(message); };
+  const source = await page.evaluate(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 360; canvas.height = 540;
+    const context = canvas.getContext('2d');
+    context.fillStyle = '#b7b5ef'; context.fillRect(0, 0, 360, 540);
+    context.fillStyle = '#2f3260'; context.font = 'bold 42px sans-serif';
+    context.fillText('MAKE', 50, 210); context.fillText('ROOM.', 50, 265);
+    return canvas.toDataURL('image/png').split(',')[1];
+  });
+  const file = name => ({ name, mimeType: 'image/png', buffer: Buffer.from(source, 'base64') });
+  await page.locator('.upload-label input').setInputFiles([file('poster.png'), file('loose.png')]);
+  await page.locator('.library-piece').first().waitFor();
+  check(await page.locator('.library-piece').count() === 2, 'Two library pieces uploaded');
+  await page.locator('.library-piece').first().dblclick();
+  await page.getByLabel('X (cm)', { exact: true }).fill('2');
+  await page.getByLabel('Y (cm)', { exact: true }).fill('2');
+  await page.getByRole('button', { name: '+ Add text', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Your words', exact: true }).fill('HELLO WALL');
+  await page.getByLabel('Style collection').selectOption('poster');
+  check(await page.getByLabel('Style collection').locator('option').count() === 20, 'Twenty presets');
+  check(await page.locator('.wall-piece').count() === 2, 'Loose piece remains in library');
+  const dimensions = await page.locator('.wall-piece').evaluateAll(items => items.map(item => [item.style.width, item.style.height]));
+  await page.getByRole('button', { name: 'Arrange wall pieces', exact: true }).click();
+  const arranged = await page.locator('.wall-piece').evaluateAll(items => items.map(item => [item.style.width, item.style.height]));
+  check(JSON.stringify(dimensions) === JSON.stringify(arranged), 'Composition keeps physical sizes');
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await page.getByRole('button', { name: 'Select all on wall', exact: true }).click();
+  await page.getByRole('button', { name: 'Group for print', exact: true }).click();
+  await page.getByRole('button', { name: 'Lock positions', exact: true }).click();
+  check(await page.locator('.wall-piece.locked').count() === 2, 'Bulk lock');
+  await page.getByRole('button', { name: 'Unlock positions', exact: true }).click();
+  await page.getByRole('button', { name: 'Remove from wall', exact: true }).click();
+  check(await page.locator('.wall-piece').count() === 0 && await page.locator('.library-piece').count() === 3, 'Remove preserves library');
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  const backupDownload = page.waitForEvent('download');
+  await page.getByRole('button', { name: '↓ Backup', exact: true }).click();
+  await (await backupDownload).saveAs('output/playwright/learning-backup.json');
+  await page.screenshot({ path: 'output/playwright/learning-editor.png', fullPage: true });
+  await page.getByRole('button', { name: '▦ Print pack', exact: true }).click();
+  await page.getByRole('combobox', { name: 'Paper size', exact: true }).selectOption('A2');
+  await page.locator('.print-placement img').first().waitFor();
+  check(await page.locator('.print-placement').count() === 1, 'Photo plus text is a single print item');
+  await page.locator('.print-adjustments summary').click();
+  await page.getByRole('combobox', { name: 'Print rotation', exact: true }).selectOption('-90');
+  await page.getByRole('combobox', { name: 'Print rotation', exact: true }).selectOption('180');
+  const imageDownload = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download PNG', exact: true }).first().click();
+  await (await imageDownload).saveAs('output/playwright/learning-print.png');
+  await page.getByRole('button', { name: '✳ Arrange wall', exact: true }).click();
+  await page.locator('summary').filter({ hasText: 'Cut a poster sheet' }).click();
+  await page.locator('.crop-panel input[type=file]').setInputFiles(file('sheet.png'));
+  await page.getByRole('heading', { name: '9 cutout previews', exact: true }).waitFor();
+  check(await page.locator('.cutout-previews img').count() === 9, 'Grid cut previews exist');
+  await page.getByLabel('Cutout shape').selectOption('heart');
+  await page.getByRole('button', { name: 'Create 9 cutouts in Your pieces', exact: true }).click();
+  check(await page.locator('.library-piece').count() === 12, 'Approved cuts enter library');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: 'output/playwright/learning-mobile.png', fullPage: true });
+  check(errors.length === 0, `Browser runtime errors: ${errors.join(', ')}`);
+  return { upload: true, textPresets: 20, sizePreservingLayout: true, bulkLock: true, removeKeepsLibrary: true, groupPrint: true, manualPrintRotation: true, backupDownload: true, pngDownload: true, cropPreviews: 9, runtimeErrors: errors };
+}

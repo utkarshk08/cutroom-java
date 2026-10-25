@@ -1,0 +1,219 @@
+.crop-panel,
+.print-pack {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 24px;
+}
+.crop-panel .form-row,
+.print-pack .form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 14px;
+  margin: 18px 0;
+}
+.crop-panel label,
+.print-pack label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+}
+.crop-panel input[type="number"],
+.print-pack input[type="number"] {
+  width: 115px;
+}
+.crop-panel .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+.crop-panel .upload-box {
+  padding: 22px;
+  border: 2px dashed #b6a9eb;
+  border-radius: 16px;
+  background: #f8f5ff;
+}
+.crop-workspace {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) minmax(220px, 0.7fr);
+  gap: 28px;
+  align-items: start;
+  margin: 22px 0;
+}
+.crop-sheet {
+  position: relative;
+  max-width: 470px;
+  line-height: 0;
+  border: 1px solid #d8d3e6;
+}
+.crop-sheet > img {
+  width: 100%;
+  display: block;
+}
+.crop-sheet > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.crop-region {
+  fill: #6b47d90c;
+  stroke: #f9cf42;
+  stroke-width: 2;
+  pointer-events: none;
+}
+.crop-draft {
+  fill: #7657d025;
+  stroke: #7657d0;
+  stroke-width: 2;
+  stroke-dasharray: 5 3;
+  pointer-events: none;
+}
+.cutout-previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 16px;
+  max-height: 460px;
+  overflow-y: auto;
+  margin: 20px 0;
+  padding: 4px;
+}
+.cutout-previews figure {
+  margin: 0;
+  border: 1px solid #e1ddec;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.cutout-previews img {
+  width: 100%;
+  height: 150px;
+  object-fit: contain;
+  display: block;
+}
+.cutout-previews figcaption {
+  font-size: 0.75rem;
+  padding: 8px;
+}
+.checkerboard {
+  background: repeating-conic-gradient(#eee 0% 25%, #fff 0% 50%) 50% / 16px 16px;
+}
+.print-pack .check-label {
+  flex-direction: row;
+  align-items: center;
+}
+.print-pack .small-note,
+.crop-panel .small-note {
+  font-size: 0.82rem;
+  color: #655f75;
+  line-height: 1.5;
+}
+.print-pack .notice,
+.crop-panel .notice {
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #fff3d7;
+  color: #654c22;
+  font-size: 0.88rem;
+}
+.print-adjustments {
+  margin: 24px 0;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #ded8eb;
+  border-radius: 12px;
+}
+.print-adjustments summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.print-item-list {
+  max-height: 390px;
+  overflow-y: auto;
+}
+.print-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid #e8e3f0;
+}
+.print-item img {
+  width: 40px;
+  height: 54px;
+  object-fit: contain;
+}
+.print-item strong {
+  max-width: 180px;
+  overflow-wrap: anywhere;
+  flex: 1;
+}
+.print-item span {
+  font-size: 0.82rem;
+}
+.oversized-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 12px 0;
+}
+.print-pages {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 26px;
+}
+.print-page-card {
+  min-width: 0;
+}
+.print-sheet {
+  position: relative;
+  background: #fff;
+  border: 1px solid #cfc9d8;
+  box-shadow: 0 8px 18px #34264d0c;
+  overflow: hidden;
+}
+.print-margin {
+  position: absolute;
+  border: 1px dashed #c8c0d9;
+  pointer-events: none;
+}
+.print-placement {
+  position: absolute;
+}
+.print-placement > img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: none;
+  object-fit: fill;
+}
+.print-placement > span {
+  font-size: 0.65rem;
+}
+.print-page-card p {
+  font-size: 0.85rem;
+}
+.print-pack .button-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.print-pack input[type="range"] {
+  min-width: 200px;
+}
+@media (max-width: 650px) {
+  .crop-panel,
+  .print-pack {
+    padding: 16px;
+  }
+  .crop-workspace {
+    grid-template-columns: 1fr;
+  }
+  .print-item strong {
+    flex-basis: 70%;
+  }
+}

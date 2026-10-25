@@ -1,0 +1,7 @@
+# Copy to application-local.properties in this folder and fill locally.
+# Run Maven from backend with -Dspring-boot.run.profiles=local.
+# This external config folder is not included in the application JAR.
+spring.datasource.url=jdbc:mysql://127.0.0.1:3306/cutroom_learning?connectionTimeZone=UTC
+spring.datasource.username=cutroom_learning
+spring.datasource.password=replace-with-your-dedicated-database-password
+app.jwt.secret=replace-with-a-new-random-base64-secret

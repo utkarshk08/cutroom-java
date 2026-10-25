@@ -1,0 +1,17 @@
+node_modules/
+dist/
+target/
+.env
+.env.local
+.env.*
+!.env.example
+application-local.properties
+*.pem
+*.key
+*.p12
+*.jks
+.idea/
+.DS_Store
+output/
+.playwright-cli/
+*.log
